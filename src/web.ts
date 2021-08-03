@@ -11,13 +11,17 @@ export class ZebraPrinterWeb extends WebPlugin implements ZebraPrinterPlugin {
     console.log('ECHO', options);
     return options;
   }
-  async requestUSBPermission(): Promise<void> {}
-  async printByUSB(options: USBOptions): Promise<void> {
-    console.log('ECHO', options);
+  async requestUSBPermission(): Promise<void> {
+    throw this.unimplemented('Not implemented on web.');
   }
-  async requestBluetoothPermission(): Promise<void> {}
-  async printByBluetooth(options: BluetoothOptions): Promise<void> {
-    console.log('ECHO', options);
+  async printByUSB(_options: USBOptions): Promise<void> {
+    throw this.unimplemented('Not implemented on web.');
+  }
+  async requestBluetoothPermission(): Promise<void> {
+    throw this.unimplemented('Not implemented on web.');
+  }
+  async printByBluetooth(_options: BluetoothOptions): Promise<void> {
+    throw this.unimplemented('Not implemented on web.');
   }
   async echo(options: { value: string }): Promise<{ value: string }> {
     console.log('ECHO', options);
