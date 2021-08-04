@@ -12,7 +12,8 @@
     "dist/",
     "ios/Plugin/",
     "CapacitorZebraPrinter.podspec",
-    "android/ZSDK_ANDROID_API.jar"
+    "android/ZSDK_ANDROID_API.jar",
+    "android/libs"
   ],
   "author": "erlangga",
   "license": "MIT",
