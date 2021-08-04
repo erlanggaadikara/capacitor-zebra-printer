@@ -33,14 +33,17 @@ import java.util.LinkedList;
 import java.util.List;
 
 @CapacitorPlugin(
-        name = "ZebraPrinter",
-        permissions = { @Permission(alias = "bluetooth", strings = { Manifest.permission.BLUETOOTH, Manifest.permission.BLUETOOTH_ADMIN }) }
+    name = "ZebraPrinter",
+    permissions = { @Permission(alias = "bluetooth", strings = { Manifest.permission.BLUETOOTH, Manifest.permission.BLUETOOTH_ADMIN }) }
 )
 public class ZebraPrinterPlugin extends Plugin {
 
+    Context context = this.getContext();
+    String APP_ID = this.getAppId();
+
     private static final String LOG_TAG = "ZebraBluetoothPrinter";
 
-    private static final String ACTION_USB_PERMISSION = "com.andromedia.wms.USB_PERMISSION";
+    private final String ACTION_USB_PERMISSION = APP_ID + ".USB_PERMISSION";
     private IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
 
     private PendingIntent mPermissionIntent;
@@ -60,48 +63,47 @@ public class ZebraPrinterPlugin extends Plugin {
 
     @PluginMethod
     public void requestUSBPermission(PluginCall call) {
-        Context context = this.getContext();
         mUsbManager = (UsbManager) context.getSystemService(Context.USB_SERVICE);
         mPermissionIntent = PendingIntent.getBroadcast(context, 0, new Intent(ACTION_USB_PERMISSION), 0);
 
         new Thread(
-                new Runnable() {
-                    public void run() {
-                        // Find connected printers
-                        UsbDiscoveryHandler handler = new UsbDiscoveryHandler();
-                        UsbDiscoverer.findPrinters(context, handler);
-                        try {
-                            while (!handler.discoveryComplete) {
-                                Thread.sleep(100);
-                            }
+            new Runnable() {
+                public void run() {
+                    // Find connected printers
+                    UsbDiscoveryHandler handler = new UsbDiscoveryHandler();
+                    UsbDiscoverer.findPrinters(context, handler);
+                    try {
+                        while (!handler.discoveryComplete) {
+                            Thread.sleep(100);
+                        }
 
-                            if (handler.printers != null && handler.printers.size() > 0) {
-                                discoveredPrinterUsb = handler.printers.get(0);
+                        if (handler.printers != null && handler.printers.size() > 0) {
+                            discoveredPrinterUsb = handler.printers.get(0);
 
-                                if (!mUsbManager.hasPermission(discoveredPrinterUsb.device)) {
-                                    mUsbManager.requestPermission(discoveredPrinterUsb.device, mPermissionIntent);
-                                } else {
-                                    hasPermissionToCommunicate = true;
-                                    JSObject ret = new JSObject();
-                                    ret.put("status", "Success");
-                                    call.resolve(ret);
-                                }
+                            if (!mUsbManager.hasPermission(discoveredPrinterUsb.device)) {
+                                mUsbManager.requestPermission(discoveredPrinterUsb.device, mPermissionIntent);
                             } else {
+                                hasPermissionToCommunicate = true;
                                 JSObject ret = new JSObject();
-                                ret.put("status", "Error");
-                                ret.put("msg", "No UsbDiscoverer Found");
+                                ret.put("status", "Success");
                                 call.resolve(ret);
                             }
-                        } catch (Exception e) {
+                        } else {
                             JSObject ret = new JSObject();
                             ret.put("status", "Error");
-                            ret.put("msg", e.getMessage());
+                            ret.put("msg", "No UsbDiscoverer Found");
                             call.resolve(ret);
                         }
+                    } catch (Exception e) {
+                        JSObject ret = new JSObject();
+                        ret.put("status", "Error");
+                        ret.put("msg", e.getMessage());
+                        call.resolve(ret);
                     }
                 }
+            }
         )
-                .start();
+            .start();
     }
 
     @PluginMethod
@@ -165,38 +167,38 @@ public class ZebraPrinterPlugin extends Plugin {
         String message = call.getString("msg");
         //bluetooth print
         new Thread(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            // Instantiate insecure connection for given Bluetooth MAC Address.
-                            Connection thePrinterConn = new BluetoothConnectionInsecure(mac);
+            new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        // Instantiate insecure connection for given Bluetooth MAC Address.
+                        Connection thePrinterConn = new BluetoothConnectionInsecure(mac);
 
-                            // if (isPrinterReady(thePrinterConn)) {
+                        // if (isPrinterReady(thePrinterConn)) {
 
-                            // Initialize
-                            Looper.prepare();
+                        // Initialize
+                        Looper.prepare();
 
-                            // Open the connection - physical connection is established here.
-                            thePrinterConn.open();
+                        // Open the connection - physical connection is established here.
+                        thePrinterConn.open();
 
-                            SGD.SET("device.languages", "zpl", thePrinterConn);
-                            thePrinterConn.write(message.getBytes());
+                        SGD.SET("device.languages", "zpl", thePrinterConn);
+                        thePrinterConn.write(message.getBytes());
 
-                            // Close the insecure connection to release resources.
-                            thePrinterConn.close();
+                        // Close the insecure connection to release resources.
+                        thePrinterConn.close();
 
-                            Looper.myLooper().quit();
-                            JSObject ret = new JSObject();
-                            ret.put("value", "Done");
-                            call.resolve(ret);
-                        } catch (Exception e) {
-                            call.reject(e.getMessage());
-                        }
+                        Looper.myLooper().quit();
+                        JSObject ret = new JSObject();
+                        ret.put("value", "Done");
+                        call.resolve(ret);
+                    } catch (Exception e) {
+                        call.reject(e.getMessage());
                     }
                 }
+            }
         )
-                .start();
+            .start();
     }
 
     private Boolean isPrinterReady(Connection connection) throws ConnectionException, ZebraPrinterLanguageUnknownException {
