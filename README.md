@@ -70,7 +70,7 @@ requestUSBPermission() => any
 ### printByUSB(...)
 
 ```typescript
-printByUSB(options: USBOptions) => any
+printByUSB(options?: USBOptions | undefined) => any
 ```
 
 | Param         | Type                                              |
@@ -96,7 +96,7 @@ requestBluetoothPermission() => any
 ### printByBluetooth(...)
 
 ```typescript
-printByBluetooth(options: BluetoothOptions) => any
+printByBluetooth(options?: BluetoothOptions | undefined) => any
 ```
 
 | Param         | Type                                                          |

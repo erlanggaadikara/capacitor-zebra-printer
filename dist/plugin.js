@@ -10,13 +10,17 @@ var capacitorZebraPrinter = (function (exports, core) {
             console.log('ECHO', options);
             return options;
         }
-        async requestUSBPermission() { }
-        async printByUSB(options) {
-            console.log('ECHO', options);
+        async requestUSBPermission() {
+            throw this.unimplemented('Not implemented on web.');
         }
-        async requestBluetoothPermission() { }
-        async printByBluetooth(options) {
-            console.log('ECHO', options);
+        async printByUSB(_options) {
+            throw this.unimplemented('Not implemented on web.');
+        }
+        async requestBluetoothPermission() {
+            throw this.unimplemented('Not implemented on web.');
+        }
+        async printByBluetooth(_options) {
+            throw this.unimplemented('Not implemented on web.');
         }
         async echo(options) {
             console.log('ECHO', options);

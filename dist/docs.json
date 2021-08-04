@@ -49,12 +49,12 @@
       },
       {
         "name": "printByUSB",
-        "signature": "(options: USBOptions) => any",
+        "signature": "(options?: USBOptions | undefined) => any",
         "parameters": [
           {
             "name": "options",
             "docs": "",
-            "type": "USBOptions"
+            "type": "USBOptions | undefined"
           }
         ],
         "returns": "any",
@@ -77,12 +77,12 @@
       },
       {
         "name": "printByBluetooth",
-        "signature": "(options: BluetoothOptions) => any",
+        "signature": "(options?: BluetoothOptions | undefined) => any",
         "parameters": [
           {
             "name": "options",
             "docs": "",
-            "type": "BluetoothOptions"
+            "type": "BluetoothOptions | undefined"
           }
         ],
         "returns": "any",
